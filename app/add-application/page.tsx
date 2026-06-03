@@ -1,3 +1,4 @@
+'use client'
 import ApplicationForm from "@/components/NewApplicForm";
 
 export default function AddApplicatio(){
