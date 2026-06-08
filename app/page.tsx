@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import JobCard from "@/components/JobCard";
+import JobModal from "@/components/Modal";
 
 interface Application {
   _id: string;
@@ -17,6 +18,9 @@ export default function Home() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [statusFilter, setShowFilter] = useState("All");
+  const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
     async function fetchApplications() {
@@ -36,11 +40,34 @@ export default function Home() {
     fetchApplications();
   }, []);
 
+  const filteredApplications = 
+    statusFilter === "All" ? applications : applications.filter( (app : any) => app.status === statusFilter);
+
+  const handleDelete = async (id: string) => {
+    await fetch(`/api/applications/${id}`, {method: "DELETE"});
+
+    setApplications(
+      applications.filter((app) => app._id !== id)
+    );
+
+    setSelectedJob(null);
+};
+
+const fetchApplications = async () => {
+  const res = await fetch("/api/applications");
+  const data = await res.json();
+  setApplications(data);
+};
+
   return (
     <div>
       <main>
         <div className="min-h-screen">
-          <Navbar />
+
+          <Navbar 
+            statusFilter = {statusFilter}
+            setStatusFilter = {setShowFilter}
+          />
 
           <div className="mt-4 p-8 max-w-4xl mx-auto">
             {/*loading applications */}
@@ -69,16 +96,28 @@ export default function Home() {
             )}
 
             {/*list view*/}
-            {!loading && !error && applications.map((app) => (
+            {!loading && !error && filteredApplications.map((app: any) => (
               <JobCard
                 key={app._id}
                 company={app.companyName}
                 role={app.roleTitle}
                 date={app.dateApplied}
                 status={app.status}
+                onClick={()=> setSelectedJob(app)}
               />
             ))}
           </div>
+
+          {selectedJob && (
+            <JobModal
+              job={selectedJob}
+              onClose={() => {
+                setSelectedJob(null);
+                fetchApplications();
+              }}
+              onDelete={handleDelete}
+            />
+          )}
         </div>
       </main>
     </div>

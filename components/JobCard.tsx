@@ -3,6 +3,7 @@ type JobCardProps = {
   role: string;
   date: string;
   status: string;
+  onClick: ()=> void;
 };
 
 //mapping colour
@@ -14,10 +15,9 @@ const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   "Offered":      { bg: "bg-green-500",  text: "text-white" },
 };
 
-export default function JobCard({ company, role, date, status }: JobCardProps) {
+export default function JobCard({ company, role, date, status, onClick }: JobCardProps) {
   const style = STATUS_STYLES[status] ?? { bg: "bg-gray-400", text: "text-white" };
 
-//converting date and displaying
   const displayDate = date
     ? new Date(date + "T00:00:00").toLocaleDateString("en-GB", {
         day: "numeric",
@@ -27,7 +27,8 @@ export default function JobCard({ company, role, date, status }: JobCardProps) {
     : "—";
 
   return (
-    <div className="flex justify-between items-center bg-gray-100 shadow-sm my-4 rounded-md overflow-hidden">
+    <div onClick={onClick}
+      className="flex justify-between items-center bg-gray-100 shadow-sm my-4 rounded-md overflow-hidden">
       <div className="p-4 flex-1">
         <h2 className="text-lg font-semibold">{company}</h2>
         <div className="flex gap-6 text-sm text-gray-500 mt-1">
