@@ -1,7 +1,8 @@
 import { useState } from "react";
+import type { Application } from "@/lib/types";
 
 type ModalProps = {
-  job: any;
+  job: Application;
   onClose: () => void;
   onDelete: (id: string) => void;
 };

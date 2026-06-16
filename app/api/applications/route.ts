@@ -19,6 +19,19 @@ export async function POST(request: Request) {
   try {
     await connectDB();
     const body = await request.json();
+
+    // --- server-side field validation (returns 400, not 500) ---
+    const fields: Record<string, string> = {};
+    if (!body.companyName?.trim()) fields.companyName = "Company name is required.";
+    if (!body.roleTitle?.trim())   fields.roleTitle   = "Role title is required.";
+    if (Object.keys(fields).length > 0) {
+      return NextResponse.json(
+        { message: "Validation failed", fields },
+        { status: 400 }
+      );
+    }
+    // -----------------------------------------------------------
+
     const application = await Application.create(body);
     return NextResponse.json(application, { status: 201 });
   } catch (error: unknown) {

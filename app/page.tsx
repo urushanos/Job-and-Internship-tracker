@@ -4,26 +4,18 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import JobCard from "@/components/JobCard";
 import JobModal from "@/components/Modal";
-
-interface Application {
-  _id: string;
-  companyName: string;
-  roleTitle: string;
-  dateApplied: string;
-  source: string;
-  status: string;
-}
+import type { Application } from "@/lib/types";
 
 export default function Home() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [statusFilter, setShowFilter] = useState("All");
-  const [selectedJob, setSelectedJob] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [selectedJob, setSelectedJob] = useState<Application | null>(null);
 
-  useEffect(() => {
-    async function fetchApplications() {
+
+    const fetchApplications = async() =>{
       try {
         const res = await fetch("/api/applications");
         if (!res.ok) throw new Error(`Server responded with ${res.status}`);
@@ -32,16 +24,19 @@ export default function Home() {
       } catch (err: unknown) {
         const msg =
           err instanceof Error ? err.message : "Unknown error";
-        setError(`Could not load applications — ${msg}. Is the backend running?`);
+        setError(`Could not load applications — ${msg}. Is the application running?`);
       } finally {
         setLoading(false);
       }
     }
+
+  useEffect(()=>{
     fetchApplications();
-  }, []);
+  },[]);
+   
 
   const filteredApplications = 
-    statusFilter === "All" ? applications : applications.filter( (app : any) => app.status === statusFilter);
+    statusFilter === "All" ? applications : applications.filter((app) => app.status === statusFilter);
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/applications/${id}`, {method: "DELETE"});
@@ -53,12 +48,6 @@ export default function Home() {
     setSelectedJob(null);
 };
 
-const fetchApplications = async () => {
-  const res = await fetch("/api/applications");
-  const data = await res.json();
-  setApplications(data);
-};
-
   return (
     <div>
       <main>
@@ -66,7 +55,7 @@ const fetchApplications = async () => {
 
           <Navbar 
             statusFilter = {statusFilter}
-            setStatusFilter = {setShowFilter}
+            setStatusFilter = {setStatusFilter}
           />
 
           <div className="mt-4 p-8 max-w-4xl mx-auto">
@@ -82,8 +71,10 @@ const fetchApplications = async () => {
               <div className="mt-16 text-center">
                 <p className="text-red-500 font-medium">{error}</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  Run <code className="bg-gray-100 px-1 rounded">npm run dev</code> inside the{" "}
-                  <code className="bg-gray-100 px-1 rounded">backend/</code> folder.
+                  All data is served by Next.js API routes — make sure the dev server is running with{" "}
+                  <code className="bg-gray-100 px-1 rounded">npm run dev</code> and that your{" "}
+                  <code className="bg-gray-100 px-1 rounded">.env.local</code> contains a valid{" "}
+                  <code className="bg-gray-100 px-1 rounded">MONGODB_URI</code>.
                 </p>
               </div>
             )}
@@ -96,7 +87,7 @@ const fetchApplications = async () => {
             )}
 
             {/*list view*/}
-            {!loading && !error && filteredApplications.map((app: any) => (
+            {!loading && !error && filteredApplications.map((app) => (
               <JobCard
                 key={app._id}
                 company={app.companyName}

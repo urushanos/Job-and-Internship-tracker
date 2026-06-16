@@ -20,6 +20,7 @@ export default function ApplicationForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ companyName?: string; roleTitle?: string }>({});
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -32,6 +33,18 @@ export default function ApplicationForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();   // must be first — stops the browser's native GET submission
+
+    // --- client-side validation ---
+    const errors: { companyName?: string; roleTitle?: string } = {};
+    if (!formData.companyName.trim()) errors.companyName = "Company name is required.";
+    if (!formData.roleTitle.trim())   errors.roleTitle   = "Role title is required.";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+    // ------------------------------
+
     setSubmitting(true);
     setError("");
 
@@ -54,7 +67,7 @@ export default function ApplicationForm() {
       const msg =
         err instanceof Error
           ? err.message
-          : "Failed to save. Make sure the backend is running on port 5000.";
+          : "Failed to save. Make sure Next.js application is running and MONGODB_URI is set.";
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -73,6 +86,9 @@ export default function ApplicationForm() {
         value={formData.companyName}
         onChange={handleChange}
       />
+      {fieldErrors.companyName && (
+        <p className="text-red-500 text-xs -mt-6 mb-2 text-right">{fieldErrors.companyName}</p>
+      )}
 
       <FormComponent
         label="Role Title"
@@ -80,6 +96,9 @@ export default function ApplicationForm() {
         value={formData.roleTitle}
         onChange={handleChange}
       />
+      {fieldErrors.roleTitle && (
+        <p className="text-red-500 text-xs -mt-6 mb-2 text-right">{fieldErrors.roleTitle}</p>
+      )}
 
       <FormDate value={formData.dateApplied} onChange={handleChange} />
 
