@@ -24,13 +24,24 @@ if (!global._mongooseCache) {
 
 const cache = global._mongooseCache;
 
+// Mongoose options optimised for MongoDB Atlas
+const mongooseOpts = {
+  bufferCommands: false,           // surface errors immediately instead of queuing
+  serverSelectionTimeoutMS: 10000, // fail fast if Atlas is unreachable (10 s)
+  socketTimeoutMS: 45000,          // close idle sockets after 45 s
+};
+
 export async function connectDB(): Promise<typeof mongoose> {
-  // Already connected — reuse
+  // Already connected, reuse
   if (cache.conn) return cache.conn;
 
   // Connection in progress — wait for it
   if (!cache.promise) {
-    cache.promise = mongoose.connect(MONGO_URI);
+    cache.promise = mongoose.connect(MONGO_URI, mongooseOpts).catch((err) => {
+      // Reset so the next request can attempt a fresh connection
+      cache.promise = null;
+      throw err;
+    });
   }
 
   cache.conn = await cache.promise;

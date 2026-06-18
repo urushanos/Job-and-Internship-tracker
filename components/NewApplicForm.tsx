@@ -32,9 +32,9 @@ export default function ApplicationForm() {
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();   // must be first — stops the browser's native GET submission
+    e.preventDefault();   
 
-    // --- client-side validation ---
+    // client-side validation
     const errors: { companyName?: string; roleTitle?: string } = {};
     if (!formData.companyName.trim()) errors.companyName = "Company name is required.";
     if (!formData.roleTitle.trim())   errors.roleTitle   = "Role title is required.";
@@ -43,7 +43,6 @@ export default function ApplicationForm() {
       return;
     }
     setFieldErrors({});
-    // ------------------------------
 
     setSubmitting(true);
     setError("");
@@ -60,7 +59,6 @@ export default function ApplicationForm() {
         throw new Error(errData.message || "Server error");
       }
 
-      // Redirect back to the list on success
       router.push("/");
       router.refresh();
     } catch (err: unknown) {

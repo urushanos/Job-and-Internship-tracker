@@ -2,25 +2,26 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Application from "@/models/Application";
 
-// GET all applications
+// GET all 
 export async function GET() {
   try {
     await connectDB();
     const applications = await Application.find().sort({ createdAt: -1 });
     return NextResponse.json(applications);
   } catch (error: unknown) {
+    console.error("[GET /api/applications] ERROR:", error);
     const message = error instanceof Error ? error.message : "Error fetching applications";
     return NextResponse.json({ message }, { status: 500 });
   }
 }
 
-// POST a new application
+// POST new application
 export async function POST(request: Request) {
   try {
     await connectDB();
     const body = await request.json();
 
-    // --- server-side field validation (returns 400, not 500) ---
+    //server-side field validation 
     const fields: Record<string, string> = {};
     if (!body.companyName?.trim()) fields.companyName = "Company name is required.";
     if (!body.roleTitle?.trim())   fields.roleTitle   = "Role title is required.";
@@ -30,7 +31,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    // -----------------------------------------------------------
 
     const application = await Application.create(body);
     return NextResponse.json(application, { status: 201 });
