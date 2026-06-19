@@ -31,3 +31,12 @@ Features:
 - Filter by status
 - Edit applications
 - Delete applications
+
+Phase 2 - Auth + Dashboard (Ongoing)
+
+Features:
+- Google OAuth authentication using Auth.js
+- User Login and Log-out 
+- Session based authentication
+- Route protection using middleware 
+- Applications displayed according to logged-in user
