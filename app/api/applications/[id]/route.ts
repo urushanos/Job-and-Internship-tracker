@@ -1,12 +1,24 @@
+import { auth } from "@/auth";
 import { connectDB } from "@/lib/db";
 import { NextResponse } from "next/server"
 import Application from "@/models/Application";
 
 export async function GET( request: Request, {params}:{params: Promise<{id:string}>}){
     try{
+        const session = await auth();
+    
+            if (!session?.user) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+            }
         await connectDB();
         const {id} = await params;
-        const application = await Application.findById(id);
+        const application = await Application.findById({
+            _id : id,
+            userId: session.user.id
+        });
 
         if(!application){
             return NextResponse.json(
@@ -26,10 +38,21 @@ export async function GET( request: Request, {params}:{params: Promise<{id:strin
 
 export async function DELETE( request: Request, {params}:{params: Promise<{ id: string }>} ) {
     try{
+        const session = await auth();
+    
+            if (!session?.user) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+            }
         await connectDB();
         const {id} = await params;
 
-        const deleteApplic = await Application.findByIdAndDelete(id);
+        const deleteApplic = await Application.findOneAndDelete({
+            _id : id,
+            userId: session.user.id
+        });
 
         if(!deleteApplic){
             return NextResponse.json(
@@ -50,13 +73,25 @@ export async function DELETE( request: Request, {params}:{params: Promise<{ id: 
 
 export async function PUT( request: Request, {params}:{params: Promise<{ id: string }>} ) {
     try{
+        const session = await auth();
+    
+            if (!session?.user) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
         await connectDB();
         const {id} = await params;
         const body = await request.json();
 
-        const updateApplic = await Application.findByIdAndUpdate(
-            id, body, {new: true, runValidators: true}
-        );
+        const updateApplic = await Application.findOneAndUpdate({
+            _id: id, 
+            body, 
+            new: true, 
+            runValidators: true, 
+            userId: session.user.id
+        });
 
         if(!updateApplic){
             return NextResponse.json(

@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
 export interface IApplication extends Document {
+  userId: string,
   companyName: string;
   roleTitle: string;
   dateApplied: string;
@@ -12,6 +13,7 @@ export interface IApplication extends Document {
 
 const applicationSchema = new Schema<IApplication>(
   {
+    userId:      { type: String, required: true, index: true},
     companyName: { type: String, required: true },
     roleTitle:   { type: String, required: true },
     dateApplied: { type: String },

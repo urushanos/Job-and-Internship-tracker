@@ -1,5 +1,5 @@
 'use client'
-
+import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import JobCard from "@/components/JobCard";
@@ -13,7 +13,13 @@ export default function Home() {
 
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedJob, setSelectedJob] = useState<Application | null>(null);
+  const [user, setUser] = useState<any>(null);
 
+    useEffect(() => {
+      fetch("/api/me")
+        .then((res) => res.json())
+        .then((data) => setUser(data.user));
+    }, []);
 
     const fetchApplications = async() =>{
       try {
@@ -57,6 +63,15 @@ export default function Home() {
             statusFilter = {statusFilter}
             setStatusFilter = {setStatusFilter}
           />
+
+          <div className="flex justify-end p-4 gap-2 items-center">
+            <div>{user?.name}</div>
+              <button className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={() => signOut({callbackUrl: "/login"})}
+              >
+                Logout
+              </button>
+          </div>
 
           <div className="mt-4 p-8 max-w-4xl mx-auto">
             {/*loading applications */}
