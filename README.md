@@ -23,16 +23,16 @@ Next.js · Tailwind CSS · MongoDB · Mongoose · Auth.js · SendGrid · Jobicy 
 
 ## Current Status
 
-Phase 1 — Core Tracker (Completed)
+### Phase 1 - Core Tracker (Completed)
 
 Features:
 - View applications
 - Add applications
 - Filter by status
-- Edit applications
-- Delete applications
+- Edit and Delete applications
+- Unit testing, Client and Server side Validation
 
-Phase 2 - Auth + Dashboard (Ongoing)
+### Phase 2 - Auth + Dashboard (Ongoing)
 
 Features:
 - Google OAuth authentication using Auth.js

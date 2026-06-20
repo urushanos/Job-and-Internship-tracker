@@ -12,12 +12,6 @@ export default function JobModal({job, onClose, onDelete,}: ModalProps) {
   const[roleTitle, setRoleTitle] = useState(job.roleTitle);
   const[dateApplied, setDateApplied] = useState(job.dateApplied);
   const[status, setStatus] = useState(job.status);
-
-{/* const handleDelete = async () => {
-    await fetch(`/api/applications/${job._id}`, {method: "DELETE"});
-    onClose();
-    }; 
-*/}
     
   const handleUpdate = async() => {
     const response = await fetch(`/api/applications/${job._id}`, 
@@ -66,7 +60,7 @@ export default function JobModal({job, onClose, onDelete,}: ModalProps) {
         </div>
 
         <div>
-          <strong>Status:</strong>{job.status}
+          <strong>Status:</strong>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}

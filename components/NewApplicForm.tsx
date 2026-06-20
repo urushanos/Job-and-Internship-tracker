@@ -65,7 +65,7 @@ export default function ApplicationForm() {
       const msg =
         err instanceof Error
           ? err.message
-          : "Failed to save. Make sure Next.js application is running and MONGODB_URI is set.";
+          : "Failed to save. Make sure Next.js application is running and MONGO_URI is set.";
       setError(msg);
     } finally {
       setSubmitting(false);

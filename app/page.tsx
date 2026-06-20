@@ -89,7 +89,7 @@ export default function Home() {
                   All data is served by Next.js API routes — make sure the dev server is running with{" "}
                   <code className="bg-gray-100 px-1 rounded">npm run dev</code> and that your{" "}
                   <code className="bg-gray-100 px-1 rounded">.env.local</code> contains a valid{" "}
-                  <code className="bg-gray-100 px-1 rounded">MONGODB_URI</code>.
+                  <code className="bg-gray-100 px-1 rounded">MONGO_URI</code>.
                 </p>
               </div>
             )}
