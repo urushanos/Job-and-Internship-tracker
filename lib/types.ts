@@ -4,7 +4,7 @@ export interface Application {
   _id: string;
   companyName: string;
   roleTitle: string;
-  dateApplied: string;
+  dateApplied: Date;
   source: string;
   status: string;
 }

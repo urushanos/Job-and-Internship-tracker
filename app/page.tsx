@@ -57,7 +57,7 @@ export default function Home() {
   return (
     <div>
       <main>
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-100">
 
           <Navbar 
             statusFilter = {statusFilter}
@@ -97,8 +97,15 @@ export default function Home() {
             {/*empty */}
             {!loading && !error && applications.length === 0 && (
               <p className="text-center text-gray-400 mt-16">
-                No applications yet — click <strong>add</strong> to get started!
+                No applications yet — click <strong>Add</strong> to get started!
               </p>
+            )}
+
+            {/*No applications in set status filter*/}
+            {!loading && !error && applications.length > 0 && filteredApplications.length === 0 && (
+                <p className="text-center text-gray-400 mt-16">
+                No applications in <strong>{statusFilter}</strong>... Check <strong>All</strong>.
+                </p>
             )}
 
             {/*list view*/}

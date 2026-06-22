@@ -16,10 +16,10 @@ describe('Navbar', ()=>{
 
         expect(screen.getByRole("option", { name: "All" })).toBeInTheDocument();
         expect(screen.getByRole("option", { name: "Applied" })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "In Review" })).toBeInTheDocument();
         expect(screen.getByRole("option", { name: "Interviewing" })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "Rejected" })).toBeInTheDocument();
         expect(screen.getByRole("option", { name: "Offered" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Rejected" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Withdrawn" })).toBeInTheDocument();
     });
 
     test("calls setStatusFilter when filter changed", async ()=>{

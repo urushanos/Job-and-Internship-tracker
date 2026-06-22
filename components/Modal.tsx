@@ -10,7 +10,7 @@ type ModalProps = {
 export default function JobModal({job, onClose, onDelete,}: ModalProps) {
   const[companyName, setCompanyName] = useState(job.companyName);
   const[roleTitle, setRoleTitle] = useState(job.roleTitle);
-  const[dateApplied, setDateApplied] = useState(job.dateApplied);
+  const[dateApplied, setDateApplied] = useState(job.dateApplied ? new Date(job.dateApplied).toISOString().split("T")[0] : "");
   const[status, setStatus] = useState(job.status);
     
   const handleUpdate = async() => {
@@ -26,6 +26,10 @@ export default function JobModal({job, onClose, onDelete,}: ModalProps) {
         })
       });
 
+      const data = await response.json();
+      console.log(response.status);
+      console.log(data);
+
       if (response.ok){
         onClose();
       }
@@ -36,13 +40,16 @@ export default function JobModal({job, onClose, onDelete,}: ModalProps) {
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-[500px]">
 
-        <h2 className="text-2xl font-bold mb-4">
+        <h1 className="flex font-bold text-2xl mb-4 justify-center items-center"> Edit Application </h1>
+
+        <div className="mb-3">
+          <strong>Company:</strong>
           <input value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             className="border rounded p-2 w-full" />
-        </h2>
+        </div>
 
-        <div>
+        <div className="mb-3">
           <strong>Role:</strong> 
           <input
               value={roleTitle}
@@ -50,7 +57,7 @@ export default function JobModal({job, onClose, onDelete,}: ModalProps) {
               className="border rounded p-2 w-full" />
         </div>
 
-        <div>
+        <div className="mb-3">
           <strong>Date Applied:</strong>
           <input
                 type="date"
@@ -59,17 +66,17 @@ export default function JobModal({job, onClose, onDelete,}: ModalProps) {
                 className="border rounded p-2 w-full" />
         </div>
 
-        <div>
+        <div className="mb-3">
           <strong>Status:</strong>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             className="border rounded p-2 w-full">
               <option value="Applied">Applied</option>
-              <option value="In Review">In Review</option>
               <option value="Interviewing">Interviewing</option>
-              <option value="Rejected">Rejected</option>
               <option value="Offered">Offered</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Withdrawn">Withdrawn</option>
           </select>
         </div>
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import FormComponent from "./FormComponent";
 import FormDate from "./FormDate";
 
-const STATUS_OPTIONS = ["Applied", "In Review", "Interviewing", "Rejected", "Offered"];
+const STATUS_OPTIONS = ["Applied", "Interviewing", "Offered", "Rejected", "Withdrawn"];
 
 export default function ApplicationForm() {
   const router = useRouter();

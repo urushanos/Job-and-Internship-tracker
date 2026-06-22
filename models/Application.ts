@@ -4,9 +4,19 @@ export interface IApplication extends Document {
   userId: string,
   companyName: string;
   roleTitle: string;
-  dateApplied: string;
+  dateApplied: Date;
   source: string;
-  status: string;
+  status: {
+  type: String,
+  enum: [
+    "Applied",
+    "Interviewing",
+    "Offered",
+    "Rejected",
+    "Withdrawn"
+  ],
+  default: "Applied",
+};
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,7 +26,7 @@ const applicationSchema = new Schema<IApplication>(
     userId:      { type: String, required: true, index: true},
     companyName: { type: String, required: true },
     roleTitle:   { type: String, required: true },
-    dateApplied: { type: String },
+    dateApplied: { type: Date },
     source:      { type: String },
     status:      { type: String, default: "Applied" },
   },
