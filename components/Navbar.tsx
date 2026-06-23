@@ -8,7 +8,7 @@ setStatusFilter: React.Dispatch< React.SetStateAction<string> >;
 export default function Navbar({statusFilter, setStatusFilter}: FilterProps){
 
     return(
-        <div className="flex justify-between items-center h-15 px-4 py-2 mb-4 bg-white">
+        <div className="flex justify-between items-center h-16 px-4 py-2 mb-4 bg-white fixed top-0 left-0 w-full z-50">
 
             <h1 className="font-semibold">
                 Job and Internship Application Tracker

@@ -1,10 +1,10 @@
 'use client'
-import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import JobCard from "@/components/JobCard";
 import JobModal from "@/components/Modal";
 import type { Application } from "@/lib/types";
+import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -13,13 +13,9 @@ export default function Home() {
 
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedJob, setSelectedJob] = useState<Application | null>(null);
-  const [user, setUser] = useState<any>(null);
 
-    useEffect(() => {
-      fetch("/api/me")
-        .then((res) => res.json())
-        .then((data) => setUser(data.user));
-    }, []);
+  const[showAll, setShowAll] = useState(false);
+  const [timeFilter, setTimeFilter] = useState("Recent");
 
     const fetchApplications = async() =>{
       try {
@@ -40,9 +36,37 @@ export default function Home() {
     fetchApplications();
   },[]);
    
+  const sortedApplications = [...applications].sort((a,b) =>new Date(b.dateApplied).getTime()-new Date(a.dateApplied).getTime());
+  const filteredApplications = statusFilter === "All" 
+    ? sortedApplications 
+      : sortedApplications.filter((app) => app.status === statusFilter);
 
-  const filteredApplications = 
-    statusFilter === "All" ? applications : applications.filter((app) => app.status === statusFilter);
+  const timeFilteredApplication = filteredApplications.filter((app) => {
+  const appliedDate = new Date(app.dateApplied);
+  const now = new Date();
+
+  if (timeFilter === "Recent"){
+    return true;
+  }
+
+  else if (timeFilter === "Last Week"){
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7);
+
+    return appliedDate > oneWeekAgo;
+  }
+
+    else if (timeFilter === "Last Month"){
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(now.getDate() - 30);
+
+    return appliedDate > oneMonthAgo;
+  }
+
+  return true;
+});
+
+  const displayedApplications = showAll ? timeFilteredApplication: timeFilteredApplication.slice(0,5);
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/applications/${id}`, {method: "DELETE"});
@@ -57,23 +81,31 @@ export default function Home() {
   return (
     <div>
       <main>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-100 pt-8">
 
           <Navbar 
             statusFilter = {statusFilter}
             setStatusFilter = {setStatusFilter}
           />
 
-          <div className="flex justify-end p-4 gap-2 items-center">
-            <div>{user?.name}</div>
-              <button className="bg-red-500 text-white px-4 py-2 rounded"
-                onClick={() => signOut({callbackUrl: "/login"})}
-              >
-                Logout
-              </button>
-          </div>
+          <div className="flex">
 
-          <div className="mt-4 p-8 max-w-4xl mx-auto">
+          <Dashboard
+            //user={user}
+            applications={applications}
+          />
+
+          <div className="ml-72 flex-1 p-8">
+            <select
+              value={timeFilter}
+              onChange = {(e)=>setTimeFilter(e.target.value)}  className="border rounded px-3 py-2 mt-4 bg-black text-white">
+              
+              <option value={"Recent"}>Recent</option>
+              <option value={"Last Week"}>Last Week</option>
+              <option value={"Last Month"}>Last Month</option>
+            </select>
+
+            <div className="max-w-4xl mx-auto">
             {/*loading applications */}
             {loading && (
               <p className="text-center text-gray-500 mt-16">
@@ -109,7 +141,7 @@ export default function Home() {
             )}
 
             {/*list view*/}
-            {!loading && !error && filteredApplications.map((app) => (
+            {!loading && !error && displayedApplications.map((app) => (
               <JobCard
                 key={app._id}
                 company={app.companyName}
@@ -119,7 +151,18 @@ export default function Home() {
                 onClick={()=> setSelectedJob(app)}
               />
             ))}
+
+            {/*Show All and Show Less buttons*/}
+            { timeFilteredApplication.length >5 && (
+              <div className="flex justify-center mt-6"> 
+                <button onClick={()=>setShowAll(!showAll)} className="bg-black text-white rounded px-4 py-2">
+                  {showAll ? "Show Less" : "Show More"}</button>
+              </div>
+            )}
+
+            </div>
           </div>
+        </div>
 
           {selectedJob && (
             <JobModal

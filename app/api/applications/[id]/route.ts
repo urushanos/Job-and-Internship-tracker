@@ -93,9 +93,6 @@ export async function PUT( request: Request, {params}:{params: Promise<{ id: str
         {    new: true, 
             runValidators: true, 
         });
-
-        console.log(session.user.id);
-        console.log("ID:", id);
         
         if(!updateApplic){
             return NextResponse.json(
