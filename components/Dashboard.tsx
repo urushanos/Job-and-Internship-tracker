@@ -3,20 +3,26 @@ import { signOut } from "next-auth/react";
 import StatusCard from "@/components/StatusCard";
 import ResponseRate from "@/components/ResposeRate";
 import WeeklyActivity from "@/components/WeeklyActivity";
-import { Application } from "@/lib/types";
 import { useEffect, useState } from "react";
 
-type dashboardProps = {
-    applications : Application[];
+type DashboardData = {
+  total: number;
+  statusCount: {
+    status: string;
+    count: number;
+  }[];
+  last7Days: {
+    day: string;
+    count: number;
+  }[];
+  responseRate: number;
 };
 
-export default function Dashboard({applications} : dashboardProps){
+export default function Dashboard(){
     const [user, setUser] = useState<any>(null);
-    const statuses = [ "Applied", "Interviewing", "Offered", "Rejected", "Withdrawn" ];
-    const statusCount = statuses.map((status) => ({
-    name : status,
-    count : applications.filter((app) => app.status === status).length
-    }));
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
 
     useEffect(() => {
       fetch("/api/me")
@@ -24,27 +30,61 @@ export default function Dashboard({applications} : dashboardProps){
         .then((data) => setUser(data.user));
     }, []);
 
-    const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (6 - i));
-    
-      const count = applications.filter((app) => {
-        const applied = new Date(app.dateApplied);
-        return (
-          applied.toDateString() === date.toDateString()
-        );
-      }).length;
-    
-      return {
-        day: date.toLocaleDateString("en-US", {
-          weekday: "short",
-        }),
-        count,
-      };
-    });
+    useEffect(() => {
+    const fetchDashboard = async () => {
+        try {
+        setLoading(true);
+        const res = await fetch("/api/dashboard");
 
-    const appliedCount = statusCount.find((status) => status.name === "Applied")?.count ?? 0;
-    const responseRate = applications.length === 0 ? 0 : (applications.length - appliedCount)/applications.length;
+        if (!res.ok) {
+            throw new Error(
+            `Server responded with ${res.status}`
+            );
+        }
+
+        const data = await res.json();
+
+        setDashboardData(data);
+        } catch (err) {
+        setError(
+            err instanceof Error ? err.message : "Unknown error" );
+        } finally {
+        setLoading(false);
+        }
+    };
+
+    fetchDashboard();
+    }, []);
+
+    if (loading) {
+    return <p>Loading...</p>;
+    }
+
+    if (error) {
+    return (
+        <aside className="w-72 p-4 pt-20">
+        <div className="bg-white text-red-600 p-4 rounded">
+            Failed to load dashboard.
+        </div>
+        </aside>
+    );
+    }
+
+    if (!dashboardData) {
+        return <p>Loading...</p>;
+    }
+
+    if (dashboardData && dashboardData.total === 0) {
+    return (
+        <aside className="w-72 p-4 pt-20">
+        <div className="bg-white p-4 rounded">
+            <p className="text-gray-500">
+            No applications yet.
+            </p>
+        </div>
+        </aside>
+    );
+    }
 
     return(
             <aside className="w-72 p-4 pt-20 fixed top-0 bottom-0 left-0 bg-gray-100">
@@ -67,22 +107,20 @@ export default function Dashboard({applications} : dashboardProps){
 
                 <StatusCard
                 statusName="Total"
-                statusCount={applications.length}
+                statusCount={dashboardData.total}
                 />
                 
-                { statusCount.map((status) => (
+                {dashboardData.statusCount.map((s) => (
                 <StatusCard
-                key={status.name}
-                statusName={status.name}
-                statusCount={status.count}
+                key={s.status}
+                statusName={s.status}
+                statusCount={s.count}
                 />
                 ))}
 
+                <WeeklyActivity data={dashboardData.last7Days} />
 
-                <WeeklyActivity data={last7Days} />
-
-                <ResponseRate
-                responseCount={responseRate}/>
+                <ResponseRate responseCount={dashboardData.responseRate}/>
 
             </aside>
     );

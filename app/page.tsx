@@ -90,10 +90,7 @@ export default function Home() {
 
           <div className="flex">
 
-          <Dashboard
-            //user={user}
-            applications={applications}
-          />
+          <Dashboard />
 
           <div className="ml-72 flex-1 p-8">
             <select

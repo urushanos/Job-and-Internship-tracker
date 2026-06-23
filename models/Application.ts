@@ -6,17 +6,7 @@ export interface IApplication extends Document {
   roleTitle: string;
   dateApplied: Date;
   source: string;
-  status: {
-  type: String,
-  enum: [
-    "Applied",
-    "Interviewing",
-    "Offered",
-    "Rejected",
-    "Withdrawn"
-  ],
-  default: "Applied",
-};
+  status: "Applied" | "Interviewing" | "Offered" | "Rejected" | "Withdrawn";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,7 +18,7 @@ const applicationSchema = new Schema<IApplication>(
     roleTitle:   { type: String, required: true },
     dateApplied: { type: Date },
     source:      { type: String },
-    status:      { type: String, default: "Applied" },
+    status:      { type: String, enum: [ "Applied", "Interviewing", "Offered", "Rejected", "Withdrawn"], default: "Applied" },
   },
   { timestamps: true }
 );
