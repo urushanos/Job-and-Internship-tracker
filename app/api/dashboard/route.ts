@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { connectDB } from "@/lib/db";
 import Application from "@/models/Application";
 import { NextResponse } from "next/server";
@@ -5,7 +6,9 @@ import { NextResponse } from "next/server";
 export async function GET(){
     try{
         await connectDB();
-        const applications = await Application.find();
+        const session = await auth();
+
+        const applications = await Application.find({userId: session?.user?.id,});
         const total = applications.length;
 
         const statuses = [ "Applied", "Interviewing", "Offered", "Rejected", "Withdrawn" ];

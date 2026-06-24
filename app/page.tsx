@@ -17,7 +17,7 @@ export default function Home() {
   const[showAll, setShowAll] = useState(false);
   const [timeFilter, setTimeFilter] = useState("Recent");
 
-    const fetchApplications = async() =>{
+  const fetchApplications = async() =>{
       try {
         const res = await fetch("/api/applications");
         if (!res.ok) throw new Error(`Server responded with ${res.status}`);
@@ -90,7 +90,7 @@ export default function Home() {
 
           <div className="flex">
 
-          <Dashboard />
+          <Dashboard refresh={applications.length} />
 
           <div className="ml-72 flex-1 p-8">
             <select
