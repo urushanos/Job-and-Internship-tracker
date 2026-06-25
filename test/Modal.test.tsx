@@ -7,7 +7,7 @@ const mockJob = {
   _id: "123",
   companyName: "Google",
   roleTitle: "Software Engineer Intern",
-  dateApplied: "2025-07-20",
+  dateApplied: new Date("2025-07-20"),
   source: "LinkedIn",
   status: "Applied",
 };
@@ -105,8 +105,12 @@ test("updates application", async () => {
   global.fetch = vi.fn(() =>
     Promise.resolve({
       ok: true,
+      status : 200,
+      json : async ()=> ({
+        message : "Updated successfully"
+      }), 
     } as Response)
-  );
+  )as typeof fetch;
 
   const mockClose = vi.fn();
 

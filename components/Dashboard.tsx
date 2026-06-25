@@ -1,8 +1,8 @@
 'use client';
 import { signOut } from "next-auth/react";
-import StatusCard from "@/components/StatusCard";
-import ResponseRate from "@/components/ResposeRate";
-import WeeklyActivity from "@/components/WeeklyActivity";
+import StatusCard from "../components/StatusCard";
+import ResponseRate from "../components/ResposeRate";
+import WeeklyActivity from "../components/WeeklyActivity";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 

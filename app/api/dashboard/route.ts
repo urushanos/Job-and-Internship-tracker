@@ -1,51 +1,26 @@
-import { auth } from "@/auth";
-import { connectDB } from "@/lib/db";
-import Application from "@/models/Application";
-import { NextResponse } from "next/server";
+import { auth } from "../../../auth";
+import { buildDashboard } from "../../../lib/dashboard";
+import { connectDB } from "../../../lib/db";
+import { NextResponse } from "next/server.js";
+import { getUserApplications } from "@/lib/dashboardUser";
 
 export async function GET(){
     try{
         await connectDB();
         const session = await auth();
 
-        const applications = await Application.find({userId: session?.user?.id,});
-        const total = applications.length;
+        if (!session?.user?.id) {
+          return NextResponse.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+          );
+        }
 
-        const statuses = [ "Applied", "Interviewing", "Offered", "Rejected", "Withdrawn" ];
+        const applications = await getUserApplications(session!.user!.id);
 
-        const statusCount = statuses.map((status) => ({
-            status,
-            count : applications.filter((app) => app.status === status).length
-        }));
-
-        const last7Days = Array.from({ length: 7 }, (_, i) => {
-              const date = new Date();
-              date.setDate(date.getDate() - (6 - i));
-            
-              const count = applications.filter((app) => {
-                const applied = new Date(app.dateApplied);
-                return (
-                  applied.toDateString() === date.toDateString()
-                );
-              }).length;
-            
-              return {
-                day: date.toLocaleDateString("en-US", {
-                  weekday: "short",
-                }),
-                count,
-              };
-            });
-        
-            const appliedCount = statusCount.find((s) => s.status === "Applied")?.count ?? 0;
-            const responseRate = total === 0 ? 0 : (total - appliedCount)/total;
-
-            return NextResponse.json({
-                total,
-                statusCount,
-                last7Days,
-                responseRate,
-            });
+        return NextResponse.json(
+          buildDashboard(applications)
+        );
 
     }catch (error){
         return NextResponse.json(

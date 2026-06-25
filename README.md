@@ -32,11 +32,15 @@ Features:
 - Edit and Delete applications
 - Unit testing, Client and Server side Validation
 
-### Phase 2 - Auth + Dashboard (Ongoing)
+### Phase 2 - Auth + Dashboard (Completed)
 
 Features:
 - Google OAuth authentication using Auth.js
-- User Login and Log-out 
-- Session based authentication
+- User Login and Log-out, session based authentication
 - Route protection using middleware 
 - Applications displayed according to logged-in user
+- Dashboard data API 
+- Dashboard Component showing user details
+- Summary Cards: Status counts, Weekly activity and Response Rate metric  
+- Unit testing for Dashboard aggregation and auth-scoping
+- Deployment to Vercel
