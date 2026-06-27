@@ -45,22 +45,22 @@ export default function Home() {
   const appliedDate = new Date(app.dateApplied);
   const now = new Date();
 
-  if (timeFilter === "Recent"){
+  if (timeFilter === "Recent") {
     return true;
   }
 
-  else if (timeFilter === "Last Week"){
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7);
-
-    return appliedDate > oneWeekAgo;
+  if (timeFilter === "Last Week") {
+    // show applications older than 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(now.getDate() - 7);
+    return appliedDate <= sevenDaysAgo;
   }
 
-    else if (timeFilter === "Last Month"){
+  if (timeFilter === "Last Month") {
+    //show applications older than 30 days
     const oneMonthAgo = new Date();
-    oneMonthAgo.setDate(now.getDate() - 30);
-
-    return appliedDate > oneMonthAgo;
+    oneMonthAgo.setMonth(now.getMonth() - 1);
+    return appliedDate <= oneMonthAgo;
   }
 
   return true;
