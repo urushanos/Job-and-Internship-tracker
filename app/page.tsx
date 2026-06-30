@@ -14,8 +14,9 @@ export default function Home() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedJob, setSelectedJob] = useState<Application | null>(null);
 
-  const[showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [timeFilter, setTimeFilter] = useState("Recent");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchApplications = async() =>{
       try {
@@ -36,32 +37,27 @@ export default function Home() {
     fetchApplications();
   },[]);
    
-  const sortedApplications = [...applications].sort((a,b) =>new Date(b.dateApplied).getTime()-new Date(a.dateApplied).getTime());
+  const sortedApplications = 
+    [...applications].sort((a,b) =>new Date(b.dateApplied).getTime()-new Date(a.dateApplied).getTime());
   const filteredApplications = statusFilter === "All" 
     ? sortedApplications 
       : sortedApplications.filter((app) => app.status === statusFilter);
 
-  const timeFilteredApplication = filteredApplications.filter((app) => {
-  const appliedDate = new Date(app.dateApplied);
   const now = new Date();
 
-  if (timeFilter === "Recent") {
-    return true;
-  }
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(now.getDate() - 7);
 
-  if (timeFilter === "Last Week") {
-    // show applications older than 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(now.getDate() - 7);
-    return appliedDate <= sevenDaysAgo;
-  }
+  const oneMonthAgo = new Date(now);
+  oneMonthAgo.setMonth(now.getMonth() - 1); 
 
-  if (timeFilter === "Last Month") {
-    //show applications older than 30 days
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(now.getMonth() - 1);
-    return appliedDate <= oneMonthAgo;
-  }
+  const timeFilteredApplication = filteredApplications.filter((app) => {
+  const appliedDate = new Date(app.dateApplied); 
+
+  if (timeFilter === "Recent") return true;
+  if (timeFilter === "Last Week") return appliedDate >= sevenDaysAgo; //within last 7 days
+  if (timeFilter === "Last Month") return appliedDate >= oneMonthAgo; //within the month
+  if (timeFilter === "Older") return appliedDate < oneMonthAgo; //older than a month 
 
   return true;
 });
@@ -90,7 +86,7 @@ export default function Home() {
 
           <div className="flex">
 
-          <Dashboard refresh={applications.length} />
+          <Dashboard refresh={refreshKey} />
 
           <div className="ml-72 flex-1 p-8">
             <select
@@ -100,6 +96,7 @@ export default function Home() {
               <option value={"Recent"}>Recent</option>
               <option value={"Last Week"}>Last Week</option>
               <option value={"Last Month"}>Last Month</option>
+              <option value={"Older"}>Older</option>
             </select>
 
             <div className="max-w-4xl mx-auto">
@@ -167,6 +164,7 @@ export default function Home() {
               onClose={() => {
                 setSelectedJob(null);
                 fetchApplications();
+                setRefreshKey((k) => k + 1);
               }}
               onDelete={handleDelete}
             />

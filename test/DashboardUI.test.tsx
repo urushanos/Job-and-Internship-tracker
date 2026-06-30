@@ -6,7 +6,7 @@ vi.mock("next-auth/react" , ()=> ({
     signOut : vi.fn(),
 }));
 
-vi.mock("next/images" , ()=> ({
+vi.mock("next/image" , ()=> ({
     default : (props: any) => <img {...props} />,
 }));
 

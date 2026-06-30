@@ -1,5 +1,5 @@
 type FilterProps ={
-    statusName : String;
+    statusName : string;
     statusCount : number;
 }
 

@@ -23,8 +23,13 @@ type DashboardProps = {
   refresh: number;
 };
 
+type SessionUser = {
+  name?: string | null;
+  image?: string | null;
+};
+
 export default function Dashboard({ refresh }: DashboardProps) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [dashboardData, setDashboardData] =
